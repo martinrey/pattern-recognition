@@ -1,7 +1,6 @@
 function [label, model] = mixGaussEm(X, init)
 %% init
 fprintf('EM for Gaussian mixture: running ... \n');
-tol = 1e-6;
 maxiter = 500;
 R = initialization(X,init);
 for iter = 2:maxiter
@@ -13,19 +12,9 @@ end
 
 function R = initialization(X, init)
 n = size(X,2);
-if isstruct(init)  % init with a model
-    R  = expectation(X,init);
-elseif numel(init) == 1  % random init k
-    k = init;
-    label = ceil(k*rand(1,n));
-    R = full(sparse(1:n,label,1,n,k,n));
-elseif all(size(init)==[1,n])  % init with labels
-    label = init;
-    k = max(label);
-    R = full(sparse(1:n,label,1,n,k,n));
-else
-    error('ERROR: init is not valid.');
-end
+label = init;
+k = max(label);
+R = full(sparse(1:n,label,1,n,k,n));
 
 function R = expectation(X, model)
 mu = model.mu;
