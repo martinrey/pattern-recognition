@@ -1,12 +1,4 @@
 function [label, model] = mixGaussEm(X, init)
-% Perform EM algorithm for fitting the Gaussian mixture model.
-% Input: 
-%   X: d x n data matrix
-%   init: k (1 x 1) number of components or label (1 x n, 1<=label(i)<=k) or model structure
-% Output:
-%   label: 1 x n cluster label
-%   model: trained model structure
-
 %% init
 fprintf('EM for Gaussian mixture: running ... \n');
 tol = 1e-6;
@@ -43,12 +35,19 @@ w = model.w;
 n = size(X,2);
 k = size(mu,2);
 R = zeros(n,k);
-for i = 1:k
-    R(:,i) = loggausspdf(X,mu(:,i),Sigma(:,:,i));
+suma = 0;
+
+for j = 1:n
+    for i = 1:k
+        R(j, i) = w(i)*mvnpdf(X(:, j), mu(:, i), Sigma(:, :, i));
+    end
 end
-R = bsxfun(@plus,R,log(w));
-T = logsumexp(R,2);
-R = exp(bsxfun(@minus,R,T));
+for j = 1:n
+   suma = sum(R, 2);
+   for i = 1:k
+       R(j, i) = R(j, i)/suma(j);
+   end
+end
 
 function model = maximization(X, R)
 [d,n] = size(X);
@@ -62,21 +61,9 @@ r = sqrt(R);
 for i = 1:k
     Xo = bsxfun(@minus,X,mu(:,i));
     Xo = bsxfun(@times,Xo,r(:,i)');
-    Sigma(:,:,i) = Xo*Xo'/nk(i)+eye(d)*(1e-6);
+    Sigma(:,:,i) = Xo*Xo'/nk(i);
 end
 
 model.mu = mu;
 model.Sigma = Sigma;
 model.w = w;
-
-function y = loggausspdf(X, mu, Sigma)
-d = size(X,1);
-X = bsxfun(@minus,X,mu);
-[U,p]= chol(Sigma);
-if p ~= 0
-    error('ERROR: Sigma is not PD.');
-end
-Q = U'\X;
-q = dot(Q,Q,1);  % quadratic term (M distance)
-c = d*log(2*pi)+2*sum(log(diag(U)));   % normalization constant
-y = -(c+q)/2;
