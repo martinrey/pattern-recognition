@@ -1,0 +1,138 @@
+
+function draw_box(x1, x2, y1, y2, format)
+	plot([x1:x2], ones(size([x1:x2])) * y1, format);
+	plot([x1:x2], ones(size([x1:x2])) * y2, format);
+	plot(ones(size([y1:y2])) * x1, [y1:y2], format);
+	plot(ones(size([y1:y2])) * x2, [y1:y2], format);
+endfunction
+
+function [mu drawed] = get_mean(A, x1, x2, y1, y2)
+	mu = zeros(1, 3);
+	drawed = zeros(1400, 1312);
+	
+	amount = 0;
+	for x = x1:x2
+		for y = y1:y2
+			v = double(reshape(A(x, y, :), 1, 3));
+			mu = mu + v;	
+			amount = amount + 1;
+		endfor
+	endfor
+	
+	mu = mu / amount;
+	
+	for x = x1:x2
+		for y = y1:y2
+			drawed(x, y, :) = mu
+		endfor
+	endfor
+endfunction
+
+function sigma = get_sigma(A, x1, x2, y1, y2)
+	mu = get_mean(A, x1, x2, y1, y2);
+	sigma = zeros(3, 3);
+	amount = 0;
+	for x = x1:x2
+		for y = y1:y2
+			v = double(reshape(A(x, y, :), 1, 3) - mu);	
+			sigma = sigma + (v' * v);
+			amount = amount + 1;
+		endfor
+	endfor
+	sigma = sigma / (amount - 1);
+endfunction
+
+region_1 = [50 250; 800 1100]
+region_2 = [430 550; 300 420]
+region_3 = [270 380; 545 665]
+
+% Draw regions
+drawed_region = imread('circular.jpg');
+imshow(drawed_region); 
+hold("on");
+
+printf("region1:  x1 -> %d | x2 -> %d | y1 -> %d | y2 -> %d | \n", region_1(1, 1), region_1(1, 2), region_1(2, 1), region_1(2, 2));	
+draw_box(region_1(1, 1), region_1(1, 2), region_1(2, 1), region_1(2, 2), "r.")
+printf("region2:  x1 -> %d | x2 -> %d | y1 -> %d | y2 -> %d | \n", region_2(1, 1), region_2(1, 2), region_2(2, 1), region_2(2, 2));	
+draw_box(region_2(1, 1), region_2(1, 2), region_2(2, 1), region_2(2, 2), "g.")
+printf("region3:  x1 -> %d | x2 -> %d | y1 -> %d | y2 -> %d | \n", region_3(1, 1), region_3(1, 2), region_3(2, 1), region_3(2, 2));	
+draw_box(region_3(1, 1), region_3(1, 2), region_3(2, 1), region_3(2, 2), "b.")
+
+imwrite(uint8(drawed_region), "training_regions.png");
+pause();
+
+% get mus
+info_for_mu = imread('circular.jpg');
+
+printf("region1:  x1 -> %d | x2 -> %d | y1 -> %d | y2 -> %d | \n", region_1(1, 1), region_1(1, 2), region_1(2, 1), region_1(2, 2));	
+[mu1, draw1] = get_mean(info_for_mu, region_1(1, 1), region_1(1, 2), region_1(2, 1), region_1(2, 2), "r.")
+printf("region2:  x1 -> %d | x2 -> %d | y1 -> %d | y2 -> %d | \n", region_2(1, 1), region_2(1, 2), region_2(2, 1), region_2(2, 2));	
+mu2, draw2 = get_mean(info_for_mu, region_2(1, 1), region_2(1, 2), region_2(2, 1), region_2(2, 2), "g.")
+printf("region3:  x1 -> %d | x2 -> %d | y1 -> %d | y2 -> %d | \n", region_3(1, 1), region_3(1, 2), region_3(2, 1), region_3(2, 2));	
+mu3, draw3 = get_mean(info_for_mu, region_3(1, 1), region_3(1, 2), region_3(2, 1), region_3(2, 2), "b.")
+imwrite(uint8(draw1 + draw2 + draw3), "mus.png");
+pause();
+
+%{
+IN = imread('circular.jpg');
+
+
+% first_training_region
+x1 = 50
+x2 = 250
+y1 = 800
+y2 = 1100
+%draw_box(x1, x2, y1, y2, 'r.');
+mu1 = get_mean(IN, x1, x2, y1, y2);
+sigma1 = get_sigma(IN, x1, x2, y1, y2);
+
+% second_training_region
+x1 = 430
+x2 = 550
+y1 = 300
+y2 = 420
+%draw_box(x1, x2, y1, y2, 'b.');
+mu1 = get_mean(IN, x1, x2, y1, y2);
+sigma1 = get_sigma(IN, x1, x2, y1, y2);
+
+% third_training_region
+x1 = 270
+x2 = 380
+y1 = 545
+y2 = 665
+%draw_box(x1, x2, y1, y2, 'g.');
+mu1 = get_mean(IN, x1, x2, y1, y2);
+sigma1 = get_sigma(IN, x1, x2, y1, y2);
+
+pause();
+
+pa1 = (1.0/3);
+pa2 = (1.0/3);
+pa3 = (1.0/3);
+
+OUT = ones(1400, 1312, 3);
+
+for x = 1:1400
+	for y = 1:1312
+
+		to_predict = reshape(double(IN(x, y, :)), 1, 3);
+		pb1 = mvnpdf(to_predict, mu1, sigma1) * pa1;
+		pb2 = mvnpdf(to_predict, mu2, sigma2) * pa2;
+		pb3 = mvnpdf(to_predict, mu3, sigma3) * pa3;
+		m = max([pb1, pb2, pb3]);
+
+		if(pb1 == m)
+			OUT(x, y, :) = uint8([0 255 0]);
+		elseif(pb2 == m)
+			OUT(x, y, :) = uint8([255 0 0]);
+		elseif(pb3 == m)
+			OUT(x, y, :) = uint8([0 0 255]);
+		endif
+	endfor
+	printf("x: %d\n", x);	
+endfor
+
+imshow(uint8(OUT));
+imwrite(uint8(OUT), "classified.png");
+
+pause();%}

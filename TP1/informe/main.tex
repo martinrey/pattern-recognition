@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=0.5in, top=1cm, bottom=2cm]{geometry}
+\usepackage[spanish, activeacute]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{graphicx} %Para incluir el logo de la UBA
+\usepackage{caratula} %Para armar el cuadro de integrantes
+\usepackage{todonotes}
+\usepackage{float}
+\usepackage{url}
+\usepackage[linesnumbered]{algorithm2e}
+
+
+\graphicspath{{imagenes/}}
+
+%Cosas para escribir codigo fuente
+%Fuente: http://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+\usepackage{listings}
+\usepackage{color}
+
+\setcounter{secnumdepth}{5}
+
+\begin{document}
+
+\integrante{Rey, Martín}{483/12}{marto.rey2006@gmail.com}
+\integrante{Garassino, Agustín}{394/12}{ajgarassino@gmail.com}
+
+\def\Materia{Reconocimiento de Patrones}
+\def\Titulo{Trabajo Pr\'{a}ctico 1}
+\def\Fecha{2do. cuatrimestre 2015}
+
+%----- CARATULA -----%
+
+\thispagestyle{empty}
+
+\begin{center}
+	\includegraphics[scale = 0.25]{imagenes/logo_uba.jpg}
+\end{center}
+
+\begin{center}
+	{\textbf{\large UNIVERSIDAD DE BUENOS AIRES}}\\[1.5em]
+	{\textbf{\large Departamento de Computaci\'{o}n}}\\[1.5em]
+    {\textbf{\large Facultad de Ciencias Exactas y Naturales}}\\
+    \vspace{25mm}
+    {\LARGE\textbf{\Materia}}\\[1em]    
+    \vspace{15mm}
+    {\Large \textbf{\Titulo}}\\[1em]
+    \vspace{15mm}
+    {\textbf{\Large \Fecha}}\\
+    \vspace{15mm}
+    \textbf{\tablaints}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\tableofcontents
+
+\parskip=5pt
+\setlength{\parindent}{15pt}
+
+\newpage
+\setcounter{page}{1}
+\pagenumbering{arabic}
+\pagestyle{plain}
+
+\input{ejercicio1}
+\input{ejercicio2}
+\input{ejercicio3}
+\end{document}
+

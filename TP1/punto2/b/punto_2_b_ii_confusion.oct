@@ -1,0 +1,85 @@
+light_green = [123, 239, 134];
+brown = [188, 152, 81];
+red = [239, 124, 67];
+dark_green = [80, 147, 53];
+yellow = [201, 199, 60];
+blue = [126, 123, 239];
+
+mu1 = light_green;
+mu2 = brown;
+mu3 = red;
+mu4 = dark_green;
+mu5 = yellow;
+mu6 = blue;
+
+sigma1 = 3 * eye(3);
+sigma2 = 3 * eye(3);
+sigma3 = 3 * eye(3);
+sigma4 = 3 * eye(3);
+sigma5 = 3 * eye(3);
+sigma6 = 3 * eye(3);
+
+pa1 = (1.0/6.0);
+pa2 = (1.0/6.0);
+pa3 = (1.0/6.0);
+pa4 = (1.0/6.0);
+pa5 = (1.0/6.0);
+pa6 = (1.0/6.0);
+
+terrestrial = imread("phantom.png");
+IN = imread("punto_2_a_ii.png");
+OUT = zeros(6, 6);
+
+reg1 = ismember(terrestrial, light_green);
+reg2 = ismember(terrestrial, brown);
+reg3 = ismember(terrestrial, red);
+reg4 = ismember(terrestrial, dark_green);
+reg5 = ismember(terrestrial, yellow);
+reg6 = ismember(terrestrial, blue);
+
+unos = ones(1, 1, 3);
+
+i = 1;
+for y = 1:640
+	for x = 1:400
+		i = i + 1
+		to_predict = reshape(double(IN(x, y, :)), 1, 3);
+		pb1 = mvnpdf(to_predict, mu1, sigma1) * pa1;
+		pb2 = mvnpdf(to_predict, mu2, sigma2) * pa2;
+		pb3 = mvnpdf(to_predict, mu3, sigma3) * pa3;
+		pb4 = mvnpdf(to_predict, mu4, sigma4) * pa4;
+		pb5 = mvnpdf(to_predict, mu5, sigma5) * pa5;
+		pb6 = mvnpdf(to_predict, mu6, sigma6) * pa6;
+		m = max([pb1, pb2, pb3, pb4, pb5, pb6]);
+
+		if(reg1(x, y, :) == unos)
+			fila = 1;
+		elseif (reg2(x, y, :) == unos)
+			fila = 2;
+		elseif (reg3(x, y, :) == unos)
+			fila = 3;
+		elseif (reg4(x, y, :) == unos)
+			fila = 4;
+		elseif (reg5(x, y, :) == unos)
+			fila = 5;
+		elseif (reg6(x, y, :) == unos)
+			fila = 6;
+		endif
+
+		if(pb1 == m)
+			OUT(fila, 1) = OUT(fila, 1) + 1;
+		elseif(pb2 == m)
+			OUT(fila, 2) = OUT(fila, 2) + 1;		
+		elseif(pb3 == m)
+			OUT(fila, 3) = OUT(fila, 3) + 1;
+		elseif(pb4 == m)
+			OUT(fila, 4) = OUT(fila, 4) + 1;
+		elseif(pb5 == m)
+			OUT(fila, 5) = OUT(fila, 5) + 1;
+		elseif(pb6 == m)
+			OUT(fila, 6) = OUT(fila, 6) + 1;
+		endif;		
+	endfor
+endfor
+
+save -ascii confusion_ii OUT

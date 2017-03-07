@@ -1,0 +1,68 @@
+\section{Clasificación de imagenes reales}
+\subsection{Estimando distribuciones}
+Ahora tenemos una imagen real tomada desde un satélite. Queremos realizar lo mismo que en el caso de las imágenes sintéticas, pero tenemos un problema: no conocemos la distribución de nuestras clases. Podemos empezar asumiendo que la distribución es, como en el caso anterior, una normal gaussiana. Pero todavía seguimos sin conocer los parámetros de la misma, es decir, nuestros $\mu$ y $\Sigma$ para cada caso. Para obtenerlos elegiremos ``a ojo'' distintas secciones de la imagen, asumiremos que estas están íntegramente compuestas por porciones de terrenos que corresponden a la misma clase. Partiendo de estas secciones, utilizaremos cada uno de sus puntos para calcular estimaciones de nuestros parámetros faltantes. Utilizaremos el promedio muestral y la varianza muestral, que son estimadores insesgados.
+
+\subsection{Clasificación de la imagen}
+Utilizando el mismo algoritmo presentado en la primera sección, podemos proceder a tomar la misma imagen y ahora clasificar todos sus píxeles. Muchos de ellos ni siquiera fueron tenidos en cuenta a la hora de definir nuestras distribuciones. Para presentar el resultado, mostraremos cada píxel de la imagen con el color de la región de entrenamiento de la clase que le fue asignada:
+
+\begin{figure}[H]\centering
+   \captionsetup{labelformat=empty}
+
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/satelite.png}}
+      \caption{Cada región utilizada para la estimación de los parámetros de cada clase está recuadrada.}
+   \end{minipage}
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/satelite_clasificada.png}}
+     \caption{Resultado de  \\ la clasificación. \\}
+   \end{minipage}
+\end{figure}
+
+\subsection{Matrices de confusión}
+Al igual que en la sección de las imágenes sintéticas, ahora podemos calcular las matrices de confusión asociadas para cuantificar el desempeño de nuestro algoritmo. Esta vez no conocemos la verdad terrestre, así que definiremos a ojo porciones de terreno y consideraremos que todos los píxeles en ella pertenecen a la clase que intuitivamente debería pertenecer. Luego contrastaremos qué tan eficaz es nuestro algoritmo para encasillar en la clase apropiada cada pixel de esa región. Además, como utilizaremos regiones con distinta cantidad de muestras para generar las matrices, esta vez pondremos el porcentaje de acertados.
+
+\begin{itemize}
+\item Matriz de confusión considerando la verdad terrestre como las regiones de entrenamiento: 
+
+\begin{center}
+ \begin{tabular}{c|c|c|c|c|}
+\cline{2-5}
+ & \textcolor{red}{$K_{1}$} & \textcolor{green}{$K_{2}$} & \textcolor{blue}{$K_{3}$} & \% acierto \\
+\hline
+\multicolumn{1}{|c|}{\textcolor{red}{$K_{1}$}} & 59979 & 0 & 21 & $\sim 100\%$ \\
+\multicolumn{1}{|c|}{\textcolor{green}{$K_{2}$}} & 74  & 14295 & 31 & $\sim 99\%$ \\
+\multicolumn{1}{|c|}{\textcolor{blue}{$K_{3}$}} & 246   & 57  & 12897 & $\sim 98\%$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\item Ahora la verdad terrestre son otras regiones seleccionadas al azar, pero que tranquilamente podrían haber sido utilizadas para entrenar en un principio por su homogeneidad. Las regiones de entrenamiento se dejaron fijas. Podemos observar que el algoritmo hizo un buen trabajo de todas formas:
+
+\begin{figure}[H]\centering
+   \captionsetup{labelformat=empty}
+ 
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/regiones_alternativas.png}}
+      \caption{Regiones alternativas.}
+   \end{minipage}
+   \begin{minipage}{0.49\textwidth}
+   \begin{center}
+      \begin{tabular}{c|c|c|c|c|}
+		\cline{2-5}
+ & \textcolor{red}{$K_{1}$} & \textcolor{green}{$K_{2}$} & \textcolor{blue}{$K_{3}$} & \% acierto \\
+		\hline
+		\multicolumn{1}{|c|}{\textcolor{red}{$K_{1}$}} & 27782 & 1 & 217 & $ \sim 99\%$ \\
+		\multicolumn{1}{|c|}{\textcolor{green}{$K_{2}$}} & 74  & 11000 & 0 & $\sim 99\%$  \\
+		\multicolumn{1}{|c|}{\textcolor{blue}{$K_{3}$}} & 7   & 1141  & 7352 & $\sim 86\%$ \\
+		\hline
+		\end{tabular}
+		\end{center}
+   \end{minipage}
+\end{figure}
+
+
+
+\end{itemize}
+\subsection{Conclusión}
+En definitiva si uno conoce las distribuciones subyacentes en los datos y además elige cuidadosamente las regiones de entrenamiento, puede implementar este algoritmo que tiene las ventajas de ser muy simple y eficiente, y obtener unos resultados bastante decentes. Sobre todo si se eligen correctamente las \textit{\textbf{features}} a capturar de los objetos de estudio, de manera tal que las clases sean fácilmente separables.
+

@@ -1,0 +1,132 @@
+\section{Clasificación de imagenes sintéticas}
+\subsection{Verdad terrestre}
+Supongamos que estamos analizando un terreno a través de imágenes satelitales. Cada porción de terreno recibe un color en base a la clase que se le es asignada. Las clases reales de las distintas partes de terreno son llamadas la \textit{\textbf{verdad terrestre}} y típicamente son el dato que no poseemos y queremos hallar. En este caso conocemos la verdad terrestre pero, para realizar la experimentación, asumiremos que no la conocemos y luego compararemos el resultado de nuestro algoritmo de clasificación con la misma.
+
+\begin{center}
+\includegraphics[scale=0.44]{imagenes/phantom.png}
+\\
+\vspace{1pt}
+\footnotesize\textit{Verdad terrestre: cada porción de terreno está coloreada según la clase que le corresponde en la realidad.}
+\end{center}
+
+\subsection{Creación de imágenes sintéticas}
+Típicamente poseemos imágenes satélitales ruidosas, donde no es tan fácil discernir a qué clase corresponde una sección del terreno. Nuestro objetivo ahora es generar imágenes sintéticas que se asemejen a las que poseeríamos en una situación más realista durante un problema de clasificación. Para hacerlo partiremos de la imagen que posee la \textit{\textbf{verdad terrestre}} y haremos que los colores en nuestra imagen sintética se desvien ligeramente de los originales, generando ruido. Por ejemplo si en la imagen original una porción de terreno era puramente roja, en nuestra imagen sintetizada tendremos secciones con tonos rojizos, pero con ruido que lo desvía de ese rojo originalmente homogéneo. Las matrices de covarianza utilizadas para agregar ruido sobre los colores de la imagen original, serán aumentadas en complejidad progresivamente de manera que el ruido generado por las mismas sea mayor. Nuestra hipótesis es que esto hará que el algoritmo de clasificación se comporte peor en estos últimos casos.
+
+\subsection{Modelo}
+El \textit{\textbf{featurespace}} en este caso es tridimensional, una coordenada por cada una de los colores que conforman el modelo \textbf{RGB}. Las probabilidades a priori de cada una de las 6 clases serán tomadas como equiprobables. Las distribuciones asumidas para el algoritmo de clasificación serán en todos los casos gaussianas con $\mu=(\textrm{color en verdad terrestre})$ y $\Sigma=3*I_{(3,3)}$.
+
+\subsection{Resultados}
+\subsubsection{Imágenes sintéticas vs imágenes clasificadas}
+A continuación presentamos los resultados de la experimentación. Tenemos 6 clases, cada una de ellas tiene un color asociado que la representa. En la columna izquierda tenemos las imagenes sintéticas, generadas con ruido a partir de los colores representativos de cada clase. En la columna derecha tenemos el resultado de clasificar cada uno de esos puntos, en estas imagenes cada pixel es pintado con el color representativo de la clase que se le asignó. Es decir que mientras que en las imágenes sintéticas tenemos una cantidad arbitraria de colores distintos, en la derecha sólo tenemos 6 colores. Notar que la verdad terrestre también tiene sólo 6 colores: en definitiva esta imagen es equivalente a la clasificación perfecta de cada punto. 
+
+\begin{figure}[H]\centering
+   \captionsetup{labelformat=empty}
+
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/punto_2_a_i.png}}
+     \caption{Ruido con matrices de covarianza isotrópica e iguales entre todas las clases.}
+   \end{minipage}
+   \begin {minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/punto_2_b_i.png}}
+     \caption{Resultado de clasificación, bastante similar a la verdad terrestre.}
+   \end{minipage}
+\end{figure}
+
+\begin{figure}[H]\centering
+   \captionsetup{labelformat=empty}
+   
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/punto_2_a_ii.png}}
+     \caption{Ruido con matrices de covarianza diagonales y distintas entre todas las clases.}
+   \end{minipage}
+   \begin {minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/punto_2_b_ii.png}}
+     \caption{Resultado de clasificación, bastante similar a la verdad terrestre.}
+   \end{minipage}
+\end{figure}
+
+\begin{figure}[H]\centering
+   \captionsetup{labelformat=empty}
+   
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/punto_2_a_iii.png}}
+     \caption{Ruido con matrices de covarianza no diagonales y distintas entre todas las clases.}
+   \end{minipage}
+   \begin {minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/punto_2_b_iii.png}}
+     \caption{Resultado de clasificación, con bastantes más errores que en el primer caso.}
+   \end{minipage}
+\end{figure}
+
+\subsubsection{Matrices de confusión}
+Si bien se puede ver a simple vista que en el tercer experimento la clasificación fue bastante peor que en el primero, todavía no utilizamos una métrica concreta que refleje esto. Las matrices de confusión nos indican cuál es la cantidad de puntos que clasificamos erróneamente, y su dimensión es de $k \times k$ donde $k$ es la cantidad clases distintas. Para cada sujeto analizado se elije una fila y una columna y se lo posiciona en la matriz de confusión. Para seleccionar la fila se utiliza la clase real a la que pertenece el sujeto (en este caso un pixel de terreno). Para seleccionar la columna se utiliza la clase predicha. Entonces idealmente nuestra matriz sería puramente diagonal, indicando que cada sujeto fue etiquetado en la clase de la que era realmente. 
+
+\definecolor{lg}{RGB}{123, 239, 134}
+\definecolor{br}{RGB}{188, 152, 81}
+\definecolor{rr}{RGB}{239, 124, 67}
+\definecolor{dg}{RGB}{80, 147, 53}
+\definecolor{yy}{RGB}{201, 199, 60}
+\definecolor{bb}{RGB}{126, 123, 239}
+
+\begin{itemize}
+
+\item Poco ruido en la imagen, generado con matrices de covarianza isotrópicas e iguales entre si:
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c|c|}
+    \cline{2-7}
+     & \textcolor{lg}{$K_{1}$} & \textcolor{br}{$K_{2}$} & \textcolor{rr}{$K_{3}$} & \textcolor{dg}{$K_{4}$} & \textcolor{yy}{$K_{5}$} & \textcolor{bb}{$K_{6}$} \\
+    \hline
+    \multicolumn{1}{|c|}{\textcolor{lg}{$K_{1}$}} & 63288 & 0     & 0     & 0     & 1     & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{br}{$K_{2}$}} & 0     & 53809 & 388   & 0     & 867   & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{rr}{$K_{3}$}} & 0     & 259   & 35095 & 0     & 4     & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{dg}{$K_{4}$}} & 0     & 0     & 0     & 22829 & 0     & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{yy}{$K_{5}$}} & 0     & 581   & 4     & 0     & 38134 & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{bb}{$K_{6}$}} & 0     & 0     & 0     & 0     & 0     & 40741 \\
+    \hline
+\end{tabular}
+\end{center}
+
+La cantidad total de pixeles mal clasificados es: 2014.
+ 
+\item Poco ruido en la imagen, generado con matrices de covarianza diagonales y distintas entre si:
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c|c|}
+    \cline{2-7}
+     & \textcolor{lg}{$K_{1}$} & \textcolor{br}{$K_{2}$} & \textcolor{rr}{$K_{3}$} & \textcolor{dg}{$K_{4}$} & \textcolor{yy}{$K_{5}$} & \textcolor{bb}{$K_{6}$} \\
+    \hline
+    \multicolumn{1}{|c|}{\textcolor{lg}{$K_{1}$}} & 63289 & 0     & 0     & 0     & 0     & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{br}{$K_{2}$}} & 0     & 54534 & 189   & 0     & 341   & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{rr}{$K_{3}$}} & 0     & 3     & 35353 & 0     & 2     & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{dg}{$K_{4}$}} & 0     & 0     & 0     & 22829 & 0     & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{yy}{$K_{5}$}} & 0     & 264   & 0     & 0     & 38455 & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{bb}{$K_{6}$}} & 0     & 0     & 0     & 0     & 0     & 40741 \\
+    \hline
+\end{tabular}
+\end{center}
+ 
+ La cantidad total de pixeles mal clasificados es: 799.
+ 
+\item Ruido alto en la imagen, generado con matrices de covarianza no diagonales y distintas entre si:
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c|c|}
+    \cline{2-7}
+     & \textcolor{lg}{$K_{1}$} & \textcolor{br}{$K_{2}$} & \textcolor{rr}{$K_{3}$} & \textcolor{dg}{$K_{4}$} & \textcolor{yy}{$K_{5}$} & \textcolor{bb}{$K_{6}$} \\
+    \hline
+    \multicolumn{1}{|c|}{\textcolor{lg}{$K_{1}$}} & 62669 & 41    & 0     & 429   & 150   & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{br}{$K_{2}$}} & 2633  & 42312 & 4413  & 977   & 4729  & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{rr}{$K_{3}$}} & 1115  & 2538  & 31180 & 0     & 525   & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{dg}{$K_{4}$}} & 1101  & 19    & 0     & 21521 & 17    & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{yy}{$K_{5}$}} & 2017  & 3886  & 558   & 135   & 32123 & 0     \\
+    \multicolumn{1}{|c|}{\textcolor{bb}{$K_{6}$}} & 2133  & 0     & 0     & 0     & 0     & 38608 \\
+    \hline
+\end{tabular}
+\end{center}
+
+La cantidad total de pixeles mal clasificados es: 27416.
+
+\end{itemize}
+
+\subsection{Conclusión}
+Podemos ver que efectivamente el peor de los casos, aquel en donde clasificamos erróneamente la mayor cantidad de puntos, es donde hemos generado más ruido. El segundo caso dió mejor que el primero, esto nos indica que el ruido generado por matrices de covarianza diagonales distintas entre si, en este caso no influyó negativamente en las clasificaciones con respecto a las matrices isotrópicas. La generación de las matrices fue en parte aleatoria, y la repetición de este experimento podría resultar en matrices de confusión distintas. Un método más robusto sería repetir el experimento de montecarlo reiteradas veces y agregar los valores. Para más información sobre la forma en que se generaron las matrices, se puede acudir al código en matlab adjuntado.
+
+La moraleja es que cuando dos clases, si bien distintas, poseen una distribución con alta varianza y además sus esperanzas están cerca, el clasificador no realizará un buen trabajo. En este caso por ejemplo, si tenemos dos colores similares como el amarillo y el marrón, y la variación es muy alta, el clasificador terminará confundiéndose bastante el marrón con el amarillo y viceversa. Una solución para esto podría ser utilizar otro método. Otra solución podría ser considerar aún más \textit{\textbf{features}} de nuestros objetos, aumentando la dimensionalidad del problema y quizás haciendo que los datos se dispersen más. Por ejemplo si además de medir el color del suelo, midieramos la temperatura. En este caso podría suceder que el suelo marrón sea muy frío y el amarillo sea caliente, luego con esta dimensión nueva sería fácil distinguir una porción de la clase amarilla de otra de la clase marrón.

@@ -1,0 +1,18 @@
+\select@language {spanish}
+\contentsline {section}{\numberline {1}Introducci\IeC {\'o}n}{1}
+\contentsline {subsection}{\numberline {1.1}Clasificaci\IeC {\'o}n: features y featurespace}{1}
+\contentsline {subsection}{\numberline {1.2}M\IeC {\'e}todo simple para clasificaci\IeC {\'o}n}{1}
+\contentsline {subsection}{\numberline {1.3}Gaussianas bivaluadas y regiones}{2}
+\contentsline {section}{\numberline {2}Clasificaci\IeC {\'o}n de imagenes sint\IeC {\'e}ticas}{2}
+\contentsline {subsection}{\numberline {2.1}Verdad terrestre}{2}
+\contentsline {subsection}{\numberline {2.2}Creaci\IeC {\'o}n de im\IeC {\'a}genes sint\IeC {\'e}ticas}{3}
+\contentsline {subsection}{\numberline {2.3}Modelo}{3}
+\contentsline {subsection}{\numberline {2.4}Resultados}{3}
+\contentsline {subsubsection}{\numberline {2.4.1}Im\IeC {\'a}genes sint\IeC {\'e}ticas vs im\IeC {\'a}genes clasificadas}{3}
+\contentsline {subsubsection}{\numberline {2.4.2}Matrices de confusi\IeC {\'o}n}{4}
+\contentsline {subsection}{\numberline {2.5}Conclusi\IeC {\'o}n}{5}
+\contentsline {section}{\numberline {3}Clasificaci\IeC {\'o}n de imagenes reales}{6}
+\contentsline {subsection}{\numberline {3.1}Estimando distribuciones}{6}
+\contentsline {subsection}{\numberline {3.2}Clasificaci\IeC {\'o}n de la imagen}{6}
+\contentsline {subsection}{\numberline {3.3}Matrices de confusi\IeC {\'o}n}{6}
+\contentsline {subsection}{\numberline {3.4}Conclusi\IeC {\'o}n}{7}

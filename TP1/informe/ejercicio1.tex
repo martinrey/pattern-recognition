@@ -1,0 +1,44 @@
+\section{Introducción}
+
+\subsection{Clasificación: features y featurespace}
+Un problema interesante en las ciencias de la computación es la clasificación automatizada de datos. Por ejemplo, teniendo mediciones de alturas y pesos de distintos perros y sabiendo a qué raza pertenecen, es posible entrenar a un programa de computadora que determine a qué raza pertenece un perro que no se encuentre en la población utilizada para que el programa aprenda. En este caso estamos abstrayendo a un objeto de la vida real, un perro, en dos características o \textbf{\textit{features}} que nos interesan para diferenciarlo de los demás: su peso y su altura. Estas características cuantificables, pueden ser representadas como puntos en un espacio o \textbf{\textit{featurespace}} bidimensional. Un perro pesado y alto entonces estará lejos de nuestro centro de coordenadas, mientras que uno delgado y bajo estará más cerca. De la misma manera, para cualquier conjunto de objetos, podemos seleccionar características deseables y medirlas, modelando a nuestra población como un conjunto de puntos en un espacio.
+
+\begin{center}
+\includegraphics[scale=0.44]{imagenes/eje.jpg}
+\\
+\vspace{1pt}
+\footnotesize\textit{Una población de 3 perros representada en un \textbf{\textit{featurespace}}. En este caso conocemos la raza de los perros de antemano, por lo tanto podemos usarlo para entrenar un programa. Luego conociendo sólo la altura y el peso para un perro, podríamos determinar con cierta confianza a cuál de las dos razas pertenece.}
+\end{center}
+
+\subsection{Método simple para clasificación}
+Si consideramos que conocemos la forma en la que las características se distribuyen en nuestra población para cada clase, entonces podemos realizar métodos simples para la clasificación de los mismos. Supongamos por ejemplo que conocemos que los caniches típicamente son delgados y de baja estatura. Entonces podemos decir que si un perro pertenece a esa raza, tiene una probabilidad muy alta de estar cerca del origen de coordenadas. Podemos asumir que el peso y la altura de los caniche siguen una distribución normal bidimensional, centrada cerca del origen y con poca varianza. Podemos hacer un razonamiento análogo para los bulldog. Una vez que escogimos nuestras distribuciones, sin tener siquiera la necesidad de entrenar a nuestro programa, podemos comenzar a clasificar perros. Lo único que tenemos que hacer es utilizar el teorema de Bayes:
+
+\begin{align*}P(\textrm{caniche} \ | \ \textrm{medicion de altura y peso}) = \frac{P(\textrm{medicion de altura y peso} \ | \ \textrm{caniche}) \ P(\textrm{caniche})}{P(\textrm{medicion de altura y peso})} \\ \\
+P(\textrm{bulldog} \ | \ \textrm{medicion de altura y peso}) = \frac{P(\textrm{medicion de altura y peso} \ | \ \textrm{bulldog}) \ P(\textrm{bulldog})}{P(\textrm{medicion de altura y peso})}\end{align*}
+
+Para determinar si es un bulldog o un caniche, podemos tomar aquél que sea más probable de ambos. Podemos notar que el termino en el denominador no es necesario computarlo, dado que aparece en ambas expresiones. Además podemos ver que aparecen los términos $P(\textrm{caniche})$ y $P(\textrm{bulldog})$, estas probabilidades son denominadas \textbf{\textit{a priori}}, y tienen que ver con la probabilidad de que una muestra aleatoria de la población sea de la raza esa, sin tener ningún dato adicional. Cada punto en nuestro \textbf{\textit{featurespace}} entonces será clasificado de manera determinística en una de las dos clases, separandolo en dos regiones posibles. Para el caso en donde tenemos $k$ clases, el espacio quedará dividido en $k$ regiones distintas.
+
+\subsection{Gaussianas bivaluadas y regiones}
+Muchas de las características de los fenómenos que encontramos en la naturaleza tienen una distribución normal. Se puede demostrar que cuando se poseen dos clases distribuidas normalmente, la frontera que separa la clasificación entre ambas puede ser descripta como una cónica. A continuación algunos gráficos de gaussianas bivaluadas y las fronteras que generan:
+
+
+\begin{figure}[!htb]\centering
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/linear.png}}
+     \caption{Ejemplo de frontera lineal.}\label{Fig:Data1}
+   \end{minipage}
+   \begin {minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/elliptic.png}}
+     \caption{Ejemplo de frontera elíptica.}\label{Fig:Data2}
+   \end{minipage}
+\end{figure}
+
+\begin{center}
+\begin{figure}[!htb]\centering
+   \begin{minipage}{0.49\textwidth}
+     \frame{\includegraphics[width=\linewidth]{imagenes/parabolic.png}}
+     \caption{Ejemplo de frontera estilo parabólica. En este caso tenemos 3 tipos de clase.}\label{Fig:Data1}
+   \end{minipage}
+\end{figure}
+\end{center}
+

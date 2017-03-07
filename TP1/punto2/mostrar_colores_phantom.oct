@@ -1,0 +1,17 @@
+light_green = [123, 239, 134];
+brown = [188, 152, 81];
+red = [239, 124, 67];
+dark_green = [80, 147, 53];
+yellow = [201, 199, 60];
+blue = [126, 123, 239];
+
+O = ones(100, 20);
+I = ones(100, 120, 3);
+
+I(:,:,1) = [O * light_green(1), O * brown(1), O * red(1), O * dark_green(1), O * yellow(1), O * blue(1)]; 
+I(:,:,2) = [O * light_green(2), O * brown(2), O * red(2), O * dark_green(2), O * yellow(2), O * blue(2)];
+I(:,:,3) = [O * light_green(3), O * brown(3), O * red(3), O * dark_green(3), O * yellow(3), O * blue(3)];
+
+imshow(uint8(I));
+
+pause();
